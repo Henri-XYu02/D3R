@@ -9,16 +9,16 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--dataset', type=str, default='SMD', help='dataset')
-    parser.add_argument('--data_dir', type=str, default='./dataset/', help='path of the data')
+    parser.add_argument('--data_dir', type=str, default='./dataset/SIM/', help='path of the data')
     parser.add_argument('--model_dir', type=str, default='./checkpoint/', help='path of the checkpoint')
 
     parser.add_argument('--itr', type=int, default=5, help='num of evaluation')
     parser.add_argument('--epochs', type=int, default=8, help='epoch of train')
     parser.add_argument('--patience', type=int, default=3, help='patience of early stopping')
-    parser.add_argument('--batch_size', type=int, default=8, help='batch size of data')
+    parser.add_argument('--batch_size', type=int, default=16, help='batch size of data')
     parser.add_argument('--lr', type=float, default=0.0001, help='learning rate of optimizer')
 
-    parser.add_argument('--period', type=int, default=1440, help='approximate period of time series')
+    parser.add_argument('--period', type=int, default=6, help='approximate period of time series')
     parser.add_argument('--train_rate', type=float, default=0.8, help='rate of train set')
     parser.add_argument('--window_size', type=int, default=64, help='size of sliding window')
 
@@ -42,6 +42,8 @@ if __name__ == '__main__':
 
     parser.add_argument('--random_seed', type=int, default=42, help='random seed')
     parser.add_argument('--gpu_id', type=int, default=0, help='device ids of gpus')
+    
+    parser.add_argument('--multi_entity', type=int, default=1, help='multi_entity dataset')
 
     config = vars(parser.parse_args())
     setSeed(config['random_seed'])

@@ -28,7 +28,8 @@ class Exp:
             path=self.data_dir,
             dataset=self.dataset,
             period=self.period,
-            train_rate=self.train_rate
+            train_rate=self.train_rate,
+            multi_entity=self.multi_entity
         )
 
         self.feature_num = data['train_data'].shape[1]
@@ -42,28 +43,32 @@ class Exp:
             time=data['train_time'],
             stable=data['train_stable'],
             label=data['train_label'],
-            window_size=self.window_size
+            window_size=self.window_size,
+            multi_entity=self.multi_entity
         )
         self.valid_set = Dataset(
             data=data['valid_data'],
             time=data['valid_time'],
             stable=data['valid_stable'],
             label=data['valid_label'],
-            window_size=self.window_size
+            window_size=self.window_size,
+            multi_entity=self.multi_entity
         )
         self.init_set = Dataset(
             data=data['init_data'],
             time=data['init_time'],
             stable=data['init_stable'],
             label=data['init_label'],
-            window_size=self.window_size
+            window_size=self.window_size,
+            multi_entity=self.multi_entity
         )
         self.test_set = Dataset(
             data=data['test_data'],
             time=data['test_time'],
             stable=data['test_stable'],
             label=data['test_label'],
-            window_size=self.window_size
+            window_size=self.window_size,
+            multi_entity=self.multi_entity
         )
 
         self.train_loader = DataLoader(self.train_set, batch_size=self.batch_size, shuffle=True, drop_last=False)

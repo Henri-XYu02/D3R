@@ -1,0 +1,10 @@
+{
+    "python.defaultInterpreterPath": "/home/ubuntu/miniforge3/envs/d3r/bin/python",
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}"
+    ],
+    "flake8.args": [
+        "--max-line-length=120",
+        "--ignore=E402"
+    ],
+}
