@@ -1,4 +1,4 @@
-# 偷懒直接让不同agent_id的数据混在一起求moving average了
+# 偷懒直接让不同agent_id的数据混在一起求moving average了，得先跑make_np_train.py（速度很慢，没用multiprocessing优化）
 
 # D3R
 
