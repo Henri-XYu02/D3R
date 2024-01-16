@@ -1,3 +1,5 @@
+# 偷懒直接让不同agent_id的数据混在一起求moving average了
+
 # D3R
 
 **Drift doesn't Matter: Dynamic Decomposition with Dffusion Reconstruction for Unstable Multivariate Time Series Anomaly Detection**
