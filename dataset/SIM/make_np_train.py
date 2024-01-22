@@ -29,8 +29,8 @@ b9k1_tst_time, k9l1_tst_time, l9b1_tst_time = [], [], []
 
 timegap = 1.4 * 86400
 ids = list(set(baseline['agent_id']).intersection(kitware['agent_id']).intersection(l3harris['agent_id']))
-ids_trn = ids[0:int(0.8*len(ids))]
-ids_tst = ids[int(0.8*len(ids)):]
+ids_trn = ids[0:int(0.2*len(ids))]
+ids_tst = ids[int(0.2*len(ids)):int(0.25*len(ids))]
 
 for i in ids_trn:
     d1,d2,d3 = baseline.loc[baseline['agent_id']==i, ['agent_id', 'latitude', 'longitude', 'stay_minutes']], kitware.loc[kitware['agent_id']==i, ['agent_id', 'latitude', 'longitude', 'stay_minutes']], l3harris.loc[l3harris['agent_id']==i, ['agent_id', 'latitude', 'longitude', 'stay_minutes']]
@@ -54,22 +54,22 @@ for i in ids_tst:
     t1,t2,t3 = tstamp1_unix[0] + t, tstamp2_unix[0] + t, tstamp3_unix[0] + t
     i1, i2, i3 = d1[(tstamp1_unix >= t1) & (tstamp1_unix < t1 + timegap)], d2[(tstamp2_unix >= t2) & (tstamp2_unix < t2 + timegap)], d3[(tstamp3_unix >= t3) & (tstamp3_unix < t3 + timegap)]
     
-    mix1 = pd.concat([d1[(tstamp1_unix < t1)], i2, d1[(tstamp1_unix >= t1 + timegap)]], axis=0)
+    # mix1 = pd.concat([d1[(tstamp1_unix < t1)], i2, d1[(tstamp1_unix >= t1 + timegap)]], axis=0)
     # mix2 = pd.concat([d2[(tstamp2_unix < t2)], i3, d2[(tstamp2_unix >= t2 + timegap)]], axis=0)
     mix3 = pd.concat([d3[(tstamp3_unix < t3)], i1, d3[(tstamp3_unix >= t3 + timegap)]], axis=0)
     
     # some label for one series: 1 or 0
-    label1 = np.zeros(len(mix1))
-    label1[len(d1[(tstamp1_unix < t1)]):len(d1[(tstamp1_unix < t1)])+len(i2)] = 1
+    # label1 = np.zeros(len(mix1))
+    # label1[len(d1[(tstamp1_unix < t1)]):len(d1[(tstamp1_unix < t1)])+len(i2)] = 1
     # label2 = np.zeros(len(mix2))
     # label2[len(d2[(tstamp2_unix < t2)]):len(d2[(tstamp2_unix < t2)])+len(i3)] = 1
     label3 = np.zeros(len(mix3))
     label3[len(d3[(tstamp3_unix < t3)]):len(d3[(tstamp3_unix < t3)])+len(i1)] = 1
     
-    for j in range(len(mix1) // win_size):
-        b9k1_tst.append(np.array(mix1.loc[:,['agent_id', 'latitude', 'longitude', 'stay_minutes']])[win_size*j:win_size*(j+1), 1:])
-        b9k1_label.append(label1[win_size*j:win_size*(j+1)])
-        b9k1_tst_time.append(np.array(mix1['time'])[win_size*j:win_size*(j+1)])
+    # for j in range(len(mix1) // win_size):
+    #     b9k1_tst.append(np.array(mix1.loc[:,['agent_id', 'latitude', 'longitude', 'stay_minutes']])[win_size*j:win_size*(j+1), 1:])
+    #     b9k1_label.append(label1[win_size*j:win_size*(j+1)])
+    #     b9k1_tst_time.append(np.array(mix1['time'])[win_size*j:win_size*(j+1)])
         
     # for j in range(len(mix2) // win_size):
     #     k9l1_tst.append(np.array(mix2.loc[['agent_id', 'latitude', 'longitude', 'stay_minutes']])[win_size*j:win_size*(j+1), 1:])
@@ -77,11 +77,18 @@ for i in ids_tst:
     #     k9l1_tst_time.append(mix2[wi.locn_size*j:win_size*(j+1), ['time']])
         
     for j in range(len(mix3) // win_size):
-        l9b1_tst.append(np.array(mix3.loc[:,['agent_id', 'latitude', 'longitude', 'stay_minutes']])[win_size*j:win_size*(j+1), 1:])
+        content = np.array(mix3.loc[:,['agent_id', 'latitude', 'longitude', 'stay_minutes']])[win_size*j:win_size*(j+1), 1:]
+        l9b1_tst.append(content)
         l9b1_label.append(label3[win_size*j:win_size*(j+1)])
-        l9b1_tst_time.append(np.array(mix3['time'])[win_size*j:win_size*(j+1)])
+        time = np.array(mix3['time'])[win_size * j: win_size * (j+1)]
+        l9b1_tst_time.append(time)
+        if len(content) != len(time):
+            print(mix3)
+            exit(0)
 
-print(len(b9k1), len(k9l1), len(l9b1))
+l9b1_tst = np.array(l9b1_tst)
+l9b1_tst_time = np.array(l9b1_tst_time)
+print(l9b1_tst.shape, l9b1_tst_time.shape)
 
 b9k1_label = np.array(b9k1_label)
 # k9l1_label = np.array(k9l1_label)
@@ -89,10 +96,10 @@ l9b1_label = np.array(l9b1_label)
 
 for i in ['b9k1', 'l9b1']:
     np.save(i+ '/' + i + '_train.npy', np.array(eval(i)), allow_pickle=True)
-    np.save(i+ '/' + i + '_train_time.npy', np.concatenate(eval(i+'_trn_time'), axis=0).flatten(), allow_pickle=True)
-    np.save(i+ '/' + i + '_test.npy', np.array(eval(i)+'_tst'), allow_pickle=True)
+    np.save(i+ '/' + i + '_train_time.npy', np.array(eval(i+'_trn_time')).flatten(), allow_pickle=True)
+    np.save(i+ '/' + i + '_test.npy', np.array(eval(i+'_tst')), allow_pickle=True)
     np.save(i+ '/' + i + '_test_label.npy', np.array(eval(i + '_label')), allow_pickle=True)
-    np.save(i+ '/' + i + '_test_time.npy', np.concatenate(eval(i+'_tst_time'), axis=0).flatten(), allow_pickle=True)
+    np.save(i+ '/' + i + '_test_time.npy', np.array(eval(i+'_tst_time')).flatten(), allow_pickle=True)
 
 
 # need same entity for both train and test

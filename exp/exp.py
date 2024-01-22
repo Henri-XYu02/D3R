@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 from data.dataset import Dataset
 from data.preprocess import getData
-from model.dddr import DRDD
+from model.dddr import DDDR
 from utils.earlystop import EarlyStop
 from utils.evaluate import evaluate
 
@@ -80,7 +80,7 @@ class Exp:
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         print('\ndevice:', self.device)
 
-        self.model = DRDD(
+        self.model = DDDR(
             time_steps=self.time_steps,
             beta_start=self.beta_start,
             beta_end=self.beta_end,
@@ -176,6 +176,11 @@ class Exp:
         test_score = np.mean(test_mse, axis=-1, keepdims=True)
 
         res = evaluate(init_score.reshape(-1), test_score.reshape(-1), test_label.reshape(-1), q=self.q)
+        
+        with open('output.txt', 'w') as file:
+            print("\n=============== " + self.dataset + " ===============", file=file)
+            print(f"P: {res['precision']:.4f} || R: {res['recall']:.4f} || F1: {res['f1_score']:.4f}", file=file)
+            print("=============== " + self.dataset + " ===============\n", file=file)
         print("\n=============== " + self.dataset + " ===============")
         print(f"P: {res['precision']:.4f} || R: {res['recall']:.4f} || F1: {res['f1_score']:.4f}")
         print("=============== " + self.dataset + " ===============\n")
